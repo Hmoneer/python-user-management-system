@@ -1,4 +1,7 @@
+
+import hashlib
 import json
+
 
 class UserSystem:
     def __init__(self):
@@ -16,23 +19,31 @@ class UserSystem:
         with open("users.json", "w") as file:
             json.dump(self.users, file)
 
+    def hash_password(self, password):
+        return hashlib.sha256(password.encode()).hexdigest()
+
     def register(self):
         username = input("Enter username: ")
-        
+
         if username in self.users:
             print("Username already exists!")
             return
-        
+
         password = input("Enter password: ")
-        self.users[username] = password
+
+        hashed = self.hash_password(password)
+        self.users[username] = hashed
+
         self.save_users()
         print("User registered successfully!")
 
     def login(self):
         username = input("Enter username: ")
         password = input("Enter password: ")
-        
-        if username in self.users and self.users[username] == password:
+
+        hashed = self.hash_password(password)
+
+        if username in self.users and self.users[username] == hashed:
             print("Login successful!")
         else:
             print("Invalid username or password")
@@ -42,7 +53,7 @@ class UserSystem:
             print("\n1- Register")
             print("2- Login")
             print("3- Exit")
-            
+
             choice = input("Choose: ")
 
             if choice == "1":
